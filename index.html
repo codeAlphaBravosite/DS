@@ -114,7 +114,7 @@
         .tab {
             flex: 1;
             padding: 0.75rem;
-            background-color: #D3D3D3;
+            background-color: #DDEEFF;
             border: 1px solid var(--border-color);
             border-radius: 0.25rem;
             cursor: pointer;
@@ -125,16 +125,18 @@
         .tab.active {
             background-color: var(--primary-color);
             color: white;
-            border-color: var(--primary-color);
+            border-color: var(--border-color);
         }
 
         .tab-content {
             display: none;
-            padding: 1rem;
+            padding: 1.4rem;
             background-color: white;
             border-radius: 0.5rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             margin-bottom: 1rem;
+            max-height: 500px; /* Adjust to your desired maximum height */
+            overflow-y: auto;
         }
 
         .tab-content.active {
@@ -162,7 +164,7 @@
         }
 
         .history-item:hover {
-            background-color: #f1f5f9;
+            background-color: var(--primary-color);
         }
 
         .audio-player {
