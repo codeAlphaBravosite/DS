@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-AudioStudio Web</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            padding: 1rem;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 768px;
+                padding: 0;
+            }
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            padding: 0.5rem;
+        }
+
+        .api-key-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        @media (min-width: 640px) {
+            .input-group {
+                flex-direction: row;
+            }
+        }
+
+        input[type="password"] {
+            flex: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+            width: 100%;
+        }
+
+        @media (min-width: 640px) {
+            button {
+                width: auto;
+            }
+        }
+
+        button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        button:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.75rem;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .tab.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 1rem;
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .output {
+            margin-top: 1rem;
+            padding: 1rem;
+            background-color: #f1f5f9;
+            border-radius: 0.25rem;
+            white-space: pre-wrap;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+
+        .history-item {
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 0.875rem;
+        }
+
+        .history-item:hover {
+            background-color: #f1f5f9;
+        }
+
+        .audio-player {
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .error {
+            color: #dc2626;
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .status-message {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>D-AudioStudio Web</h1>
+
+        <div class="api-key-section">
+            <div class="input-group">
+                <input type="password" id="apiKey" placeholder="Enter your API key">
+                <button id="saveApiKey">Save API Key</button>
+            </div>
+            <div id="apiKeyStatus" class="status-message"></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" data-tab="quota">Quota Information</button>
+            <button class="tab" data-tab="history">History Management</button>
+            <button class="tab" data-tab="viewer">History Viewer</button>
+        </div>
+
+        <div class="tab-content active" id="quotaTab">
+            <button id="getQuota">Get Quota Info</button>
+            <div class="output" id="quotaOutput"></div>
+        </div>
+
+        <div class="tab-content" id="historyTab">
+            <button id="deleteHistory">Delete All History</button>
+            <div class="output" id="historyOutput"></div>
+        </div>
+
+        <div class="tab-content" id="viewerTab">
+            <button id="refreshHistory">Refresh History</button>
+            <div id="historyList"></div>
+            <audio id="audioPlayer" class="audio-player" controls></audio>
+            <div class="output" id="viewerOutput"></div>
+        </div>
+    </div>
+
+    <script>
+        // Constants
+        const BASE_URL = 'https://api.elevenlabs.io/v1'; // Replace with actual base URL
+
+        // State management
+        let state = {
+            apiKey: localStorage.getItem('apiKey') || '',
+            currentTab: 'quota'
+        };
+
+        // DOM Elements
+        const elements = {
+            apiKeyInput: document.getElementById('apiKey'),
+            apiKeyStatus: document.getElementById('apiKeyStatus'),
+            saveApiKey: document.getElementById('saveApiKey'),
+            tabs: document.querySelectorAll('.tab'),
+            tabContents: document.querySelectorAll('.tab-content'),
+            getQuota: document.getElementById('getQuota'),
+            quotaOutput: document.getElementById('quotaOutput'),
+            deleteHistory: document.getElementById('deleteHistory'),
+            historyOutput: document.getElementById('historyOutput'),
+            refreshHistory: document.getElementById('refreshHistory'),
+            historyList: document.getElementById('historyList'),
+            audioPlayer: document.getElementById('audioPlayer'),
+            viewerOutput: document.getElementById('viewerOutput')
+        };
+
+        // API Helpers
+        const api = {
+            headers(contentType = 'application/json') {
+                return {
+                    'Accept': contentType,
+                    'xi-api-key': state.apiKey
+                };
+            },
+
+            async request(endpoint, options = {}) {
+                if (!state.apiKey) {
+                    throw new Error('API key is required. Please enter your API key.');
+                }
+
+                try {
+                    const response = await fetch(`${BASE_URL}${endpoint}`, {
+                        ...options,
+                        headers: this.headers(options.contentType || 'application/json')
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`Request failed: ${response.status} ${response.statusText}`);
+                    }
+                    
+                    return response;
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            },
+
+            async getQuota() {
+                const response = await this.request('/user');
+                const data = await response.json();
+                return data.subscription || {};
+            },
+
+            async getHistory() {
+                const response = await this.request('/history');
+                const data = await response.json();
+                return data.history || [];
+            },
+
+            async deleteHistory() {
+                const items = await this.getHistory();
+                const results = [];
+                
+                for (const item of items) {
+                    try {
+                        await this.request(`/history/${item.history_item_id}`, {
+                            method: 'DELETE'
+                        });
+                        results.push(`Deleted item: ${item.history_item_id}`);
+                    } catch (error) {
+                        results.push(`Failed to delete item ${item.history_item_id}: ${error.message}`);
+                    }
+                }
+                
+                return results;
+            },
+
+            async getAudio(historyItemId) {
+                const response = await this.request(`/history/${historyItemId}/audio`, {
+                    contentType: 'audio/mpeg'
+                });
+                return response.blob();
+            }
+        };
+
+        // Event Handlers
+        function initializeEventListeners() {
+            // API Key Management
+            elements.saveApiKey.addEventListener('click', () => {
+                const apiKey = elements.apiKeyInput.value.trim();
+                if (apiKey) {
+                    state.apiKey = apiKey;
+                    localStorage.setItem('apiKey', apiKey);
+                    elements.apiKeyInput.value = '';
+                    elements.apiKeyStatus.textContent = 'API Key saved successfully!';
+                    setTimeout(() => {
+                        elements.apiKeyStatus.textContent = '';
+                    }, 3000);
+                } else {
+                    elements.apiKeyStatus.textContent = 'Please enter an API key';
+                }
+            });
+
+            // Tab Navigation
+            elements.tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    switchTab(tabName);
+                });
+            });
+
+            // Feature Buttons
+            elements.getQuota.addEventListener('click', async () => {
+                try {
+                    elements.quotaOutput.textContent = 'Loading...';
+                    const quota = await api.getQuota();
+                    const used = quota.character_count || 0;
+                    const limit = quota.character_limit || 0;
+                    elements.quotaOutput.textContent = 
+                        `Character limit: ${limit}\n` +
+                        `Characters used: ${used}\n` +
+                        `Remaining quota: ${limit - used}`;
+                } catch (error) {
+                    elements.quotaOutput.textContent = `Error: ${error.message}`;
+                }
+            });
+
+            elements.deleteHistory.addEventListener('click', async () => {
+                try {
+                    elements.historyOutput.textContent = 'Deleting history...';
+                    const results = await api.deleteHistory();
+                    elements.historyOutput.textContent = results.join('\n');
+                } catch (error) {
+                    elements.historyOutput.textContent = `Error: ${error.message}`;
+                }
+            });
+
+            elements.refreshHistory.addEventListener('click', async () => {
+                try {
+                    elements.viewerOutput.textContent = 'Loading history...';
+                    const historyItems = await api.getHistory();
+                    renderHistoryList(historyItems);
+                    elements.viewerOutput.textContent = 'History refreshed successfully.';
+                } catch (error) {
+                    elements.viewerOutput.textContent = `Error: ${error.message}`;
+                }
+            });
+        }
+
+        // UI Helpers
+        function switchTab(tabName) {
+            state.currentTab = tabName;
+            
+            elements.tabs.forEach(tab => {
+                tab.classList.toggle('active', tab.dataset.tab === tabName);
+            });
+            
+            elements.tabContents.forEach(content => {
+                content.classList.toggle('active', content.id === `${tabName}Tab`);
+            });
+        }
+
+        function renderHistoryList(items) {
+            elements.historyList.innerHTML = '';
+            
+            if (items.length === 0) {
+                elements.historyList.innerHTML = '<div class="history-item">No history items found</div>';
+                return;
+            }
+            
+            items.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.textContent = `${item.text.substring(0, 50)}... (ID: ${item.history_item_id})`;
+                
+                div.addEventListener('click', async () => {
+                    try {
+                        elements.viewerOutput.textContent = 'Loading audio...';
+                        const blob = await api.getAudio(item.history_item_id);
+                        const url = URL.createObjectURL(blob);
+                        elements.audioPlayer.src = url;
+                        elements.audioPlayer.play();
+                        elements.viewerOutput.textContent = `Playing audio for: ${item.text.substring(0, 50)}...`;
+                    } catch (error) {
+                        elements.viewerOutput.textContent = `Error playing audio: ${error.message}`;
+                    }
+                });
+                
+                elements.historyList.appendChild(div);
+            });
+        }
+
+        // Initialize the application
+        function initialize() {
+            initializeEventListeners();
+            
+            // If API key exists, show success message
+            if (state.apiKey) {
+                elements.apiKeyStatus.textContent = 'API Key is set';
+                setTimeout(() => {
+                    elements.apiKeyStatus.textContent = '';
+                }, 3000);
+            }
+        }
+
+        initialize();
+    </script>
+</body>
+</html>
