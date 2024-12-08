@@ -6,11 +6,11 @@
     <title>D-AudioStudio Web</title>
     <style>
         :root {
-            --primary-color: #2563eb;
-            --secondary-color: #1e40af;
-            --background-color: #f8fafc;
-            --text-color: #1e293b;
-            --border-color: #e2e8f0;
+            --primary-color: #1d4ed8; /* Deeper blue for a more classic feel */
+            --secondary-color: #1e3a8a; /* Slightly muted for balance with the primary color */
+            --background-color: #ffffff; /* Pure white for ultimate minimalism */
+            --text-color: #334155; /* Softer dark gray for readability and a classic tone */
+             --border-color: #d1d5db; /* Slightly lighter gray for subtle borders */
         }
 
         * {
@@ -114,8 +114,8 @@
         .tab {
             flex: 1;
             padding: 0.75rem;
-            background-color: #2563eb;
-            color: white;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             border: 1px solid var(--border-color);
             border-radius: 0.25rem;
             cursor: pointer;
@@ -124,8 +124,8 @@
         }
 
         .tab.active {
-            background-color: var(--secondary-color);
-            color: white;
+            background-color: var(--primary-color);
+            color: var(--text-color);
             border-color: var(--border-color);
         }
 
