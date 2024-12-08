@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D-AudioStudio</title>
+    <title>Audio.Studio</title>
     <style>
         :root {
             --primary-color: #2563eb;
@@ -153,7 +153,8 @@
         }
 
         .outlist {
-
+            margin-top: 1rem;
+            margin-bottom: 1rem;
             max-height: 300px; /* Adjust to your desired maximum height */
             overflow-y: auto;
 
@@ -193,7 +194,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>D-AudioStudio Web</h1>
+        <h1>Audio.Studio</h1>
 
         <div class="api-key-section">
             <div class="input-group">
@@ -206,7 +207,7 @@
         <div class="tabs">
             <button class="tab active" data-tab="quota">Quota Information</button>
             <button class="tab" data-tab="history">History Management</button>
-            <button class="tab" data-tab="viewer">History Viewer</button>
+            <button class="tab" data-tab="viewer">Download Audio</button>
         </div>
 
         <div class="tab-content active" id="quotaTab">
@@ -220,7 +221,7 @@
         </div>
 
         <div class="tab-content" id="viewerTab">
-            <button id="refreshHistory">Refresh History</button>
+            <button id="refreshHistory">Refresh</button>
             <audio id="audioPlayer" class="audio-player" controls></audio>
             <div class="output" id="viewerOutput"></div>
             <div class="outlist" id="historyList"></div>
@@ -420,7 +421,7 @@
                         const url = URL.createObjectURL(blob);
                         elements.audioPlayer.src = url;
                         elements.audioPlayer.play();
-                        elements.viewerOutput.textContent = `Playing audio for: ${item.text.substring(0, 50)}...`;
+                        elements.viewerOutput.textContent = `Playing audio: ${item.text.substring(0, 50)}...`;
                     } catch (error) {
                         elements.viewerOutput.textContent = `Error playing audio: ${error.message}`;
                     }
