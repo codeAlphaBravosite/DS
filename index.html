@@ -6,11 +6,11 @@
     <title>D-AudioStudio Web</title>
     <style>
         :root {
-            --primary-color: #1d4ed8; /* Deeper blue for a more classic feel */
-            --secondary-color: #1e3a8a; /* Slightly muted for balance with the primary color */
-            --background-color: #ffffff; /* Pure white for ultimate minimalism */
-            --text-color: #334155; /* Softer dark gray for readability and a classic tone */
-             --border-color: #d1d5db; /* Slightly lighter gray for subtle borders */
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
         }
 
         * {
@@ -115,7 +115,7 @@
             flex: 1;
             padding: 0.75rem;
             background-color: var(--secondary-color);
-            color: var(--text-color);
+            color: #ffffff;
             border: 1px solid var(--border-color);
             border-radius: 0.25rem;
             cursor: pointer;
@@ -125,7 +125,7 @@
 
         .tab.active {
             background-color: var(--primary-color);
-            color: var(--text-color);
+            color: #ffffff;
             border-color: var(--border-color);
         }
 
@@ -142,15 +142,17 @@
             display: block;
         }
 
-        .output {
-            margin-top: 1rem;
-            padding: 1rem;
-            background-color: #f1f5f9;
-            border-radius: 0.25rem;
-            white-space: pre-wrap;
-            font-size: 0.875rem;
-            overflow-x: auto;
-        }
+        output {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f1f5f9;
+    border-radius: 0.25rem;
+    white-space: pre-wrap; /* Preserves white space and wraps text */
+    font-size: 0.875rem; /* Small font size for better readability */
+    overflow-x: auto; /* Enables horizontal scrolling for long lines */
+    max-height: 300px; /* Optional: Adds a max height to make it scrollable vertically if needed */
+    overflow-y: auto; /* Optional: Enables vertical scrolling if the content exceeds max height */
+}
 
         .history-item {
             padding: 0.75rem;
