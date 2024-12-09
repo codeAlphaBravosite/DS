@@ -150,7 +150,6 @@
             white-space: pre-wrap;
             font-size: 0.875rem;
             overflow-x: auto;
-            display: hidden;
         }
 
         .outlist {
@@ -160,8 +159,6 @@
             overflow-y: auto;
             border: 1px dashed var(--border-color);
             padding: 0.5rem;
-            display: hidden;
-
         }
 
         .history-item {
@@ -226,8 +223,8 @@
 
         <div class="tab-content" id="viewerTab">
             <button id="refreshHistory">Refresh</button>
-            <audio id="audioPlayer" class="audio-player" controls></audio>
             <div class="output" id="viewerOutput"></div>
+            <audio id="audioPlayer" class="audio-player" controls></audio>            
             <div class="outlist" id="historyList"></div>
         </div>
     </div>
