@@ -412,7 +412,7 @@
             items.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'history-item';
-                div.textContent = `${item.text.substring(0, 50)}... (ID: ${item.history_item_id})`;
+                div.textContent = `${item.text.substring(0, 20)}... (ID: ${item.history_item_id})`;
                 
                 div.addEventListener('click', async () => {
                     try {
@@ -421,7 +421,7 @@
                         const url = URL.createObjectURL(blob);
                         elements.audioPlayer.src = url;
                         elements.audioPlayer.play();
-                        elements.viewerOutput.textContent = `Playing audio: ${item.text.substring(0, 50)}...`;
+                        elements.viewerOutput.textContent = `Playing audio: ${item.text.substring(0, 20)}... (ID: ${item.history_item_id})`;
                     } catch (error) {
                         elements.viewerOutput.textContent = `Error playing audio: ${error.message}`;
                     }
